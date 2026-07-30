@@ -2,34 +2,94 @@ pipeline {
 
     agent any
 
+    environment {
+        IMAGE_NAME = "myapp"
+        CONTAINER_NAME = "mycontainer"
+        PORT = "8081"
+    }
+
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                echo "Code from GitHub"
+                echo "Getting code from GitHub"
+                checkout scm
             }
         }
 
-        stage('Docker Build') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t myapp .'
+                echo "Building Docker Image"
+
+                sh '''
+                docker build -t ${IMAGE_NAME}:latest .
+                '''
             }
         }
 
-        stage('Docker Image') {
+
+        stage('Check Docker Image') {
             steps {
-                sh 'docker images'
+                echo "Docker Images"
+
+                sh '''
+                docker images
+                '''
+            }
+        }
+
+
+        stage('Stop Old Container') {
+            steps {
+                echo "Stopping old container if exists"
+
+                sh '''
+                docker stop ${CONTAINER_NAME} || true
+                docker rm ${CONTAINER_NAME} || true
+                '''
+            }
+        }
+
+
+        stage('Run Docker Container') {
+            steps {
+                echo "Starting new container"
+
+                sh '''
+                docker run -d \
+                --name ${CONTAINER_NAME} \
+                -p ${PORT}:80 \
+                ${IMAGE_NAME}:latest
+                '''
+            }
+        }
+
+
+        stage('Verify Container') {
+            steps {
+                echo "Checking running containers"
+
+                sh '''
+                docker ps
+                '''
             }
         }
     }
 
+
     post {
+
         success {
-            echo "Docker build successful"
+            echo "Pipeline completed successfully"
         }
 
         failure {
-            echo "Docker build failed"
+            echo "Pipeline failed"
+        }
+
+        always {
+            echo "Pipeline execution finished"
         }
     }
 }
