@@ -1,34 +1,35 @@
 pipeline {
+
     agent any
 
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Getting code from GitHub'
+                echo "Code from GitHub"
             }
         }
 
-        stage('Build') {
+        stage('Docker Build') {
             steps {
-                echo 'Building application'
+                sh 'docker build -t myapp .'
             }
         }
 
-        stage('Test') {
+        stage('Docker Image') {
             steps {
-                echo 'Testing application'
+                sh 'docker images'
             }
         }
     }
 
     post {
         success {
-            echo 'Build Successful'
+            echo "Docker build successful"
         }
 
         failure {
-            echo 'Buidfiifld Failed'
+            echo "Docker build failed"
         }
     }
 }
