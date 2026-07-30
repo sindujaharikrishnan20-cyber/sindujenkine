@@ -28,7 +28,7 @@ pipeline {
         }
 
         failure {
-            echo 'Buidffld Failed'
+            echo 'Buidfiifld Failed'
         }
     }
 }
