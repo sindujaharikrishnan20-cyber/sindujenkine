@@ -9,24 +9,20 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                sh 'docker build -t myapp .'
+                echo 'Building application'
             }
         }
 
-        stage('Docker Run') {
+        stage('Test') {
             steps {
-                sh 'docker run -d -p 8081:80 myapp'
+                echo 'Testing application'
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline completed'
-        }
-
         success {
             echo 'Build Successful'
         }
